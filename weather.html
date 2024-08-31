@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Forecast</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        .forecast-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .forecast-day {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            width: 200px;
+            text-align: center;
+        }
+        .forecast-day img {
+            margin-top: 10px;
+        }
+        .forecast-day h3 {
+            margin: 0 0 10px 0;
+        }
+        .forecast-day p {
+            margin: 5px 0;
+        }
+        .clothing {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>7-Day Weather Forecast</h1>
+    <div class="forecast-container" id="forecast-container">
+        <!-- Forecast days will be inserted here -->
+    </div>
+
+    <script>
+        async function wFunc() {
+
+            const weatherData = await fetch('https://9vlieez2ol.execute-api.us-east-1.amazonaws.com/dev/weather', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': 'eZN5qcJrHK1YxzNlOmUnvaXoRE2giYf94x3Y90fD'
+                }
+            }).then(response => response.json());
+
+            const forecastData = weatherData.body;
+
+            console.log(forecastData);
+
+            const clothingRecommendations = {
+                1000: "👕🩳👟", // Sunny
+                1003: "👕👖👟", // Partly cloudy
+                1006: "🧥👖👢", // Cloudy
+                1009: "🧥👖👢", // Overcast
+                1030: "🧥🧣👢", // Mist
+                1063: "🧥👖🧤", // Patchy rain possible
+                1066: "🧥❄️👢", // Patchy snow possible
+                1069: "🧥❄️👢", // Patchy sleet possible
+                1072: "🧥❄️👢", // Patchy freezing drizzle possible
+                1087: "🧥⛈️👢", // Thundery outbreaks possible
+                1114: "🧥❄️👢", // Blowing snow
+                1117: "🧥❄️👢", // Blizzard
+                1135: "🧥🧣👢", // Fog
+                1147: "🧥🧣👢", // Freezing fog
+                1150: "🧥👖🧤", // Patchy light drizzle
+                1153: "🧥👖🧤", // Light drizzle
+                1168: "🧥❄️👢", // Freezing drizzle
+                1171: "🧥❄️👢", // Heavy freezing drizzle
+                1180: "🧥👖🧤", // Patchy light rain
+                1183: "🧥👖🧤", // Light rain
+                1186: "🧥👖🧤", // Moderate rain at times
+                1189: "🧥👖🧤", // Moderate rain
+                1192: "🧥👖🧤", // Heavy rain at times
+                1195: "🧥👖🧤", // Heavy rain
+                1198: "🧥❄️👢", // Light freezing rain
+                1201: "🧥❄️👢", // Moderate or heavy freezing rain
+                1204: "🧥❄️👢", // Light sleet
+                1207: "🧥❄️👢", // Moderate or heavy sleet
+                1210: "🧥❄️👢", // Patchy light snow
+                1213: "🧥❄️👢", // Light snow
+                1216: "🧥❄️👢", // Patchy moderate snow
+                1219: "🧥❄️👢", // Moderate snow
+                1222: "🧥❄️👢", // Patchy heavy snow
+                1225: "🧥❄️👢", // Heavy snow
+                1237: "🧥❄️👢", // Ice pellets
+                1240: "🧥👖🧤", // Light rain shower
+                1243: "🧥👖🧤", // Moderate or heavy rain shower
+                1246: "🧥👖🧤", // Torrential rain shower
+                1249: "🧥❄️👢", // Light sleet showers
+                1252: "🧥❄️👢", // Moderate or heavy sleet showers
+                1255: "🧥❄️👢", // Light snow showers
+                1258: "🧥❄️👢", // Moderate or heavy snow showers
+                1261: "🧥❄️👢", // Light showers of ice pellets
+                1264: "🧥❄️👢", // Moderate or heavy showers of ice pellets
+                1273: "🧥⛈️👢", // Patchy light rain with thunder
+                1276: "🧥⛈️👢", // Moderate or heavy rain with thunder
+                1279: "🧥❄️⛈️", // Patchy light snow with thunder
+                1282: "🧥❄️⛈️"  // Moderate or heavy snow with thunder
+            };
+
+            const container = document.getElementById('forecast-container');
+
+            forecastData.forecast.forecastday.forEach(day => {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'forecast-day';
+
+                const clothingEmoji = clothingRecommendations[day.day.condition.code] || "👕👖👟";
+
+                dayElement.innerHTML = `
+                    <h3>${day.date}</h3>
+                    <img src="https://${day.day.condition.icon}" alt="${day.day.condition.text}">
+                    <p><strong>${day.day.condition.text}</strong></p>
+                    <p>Max Temp: ${day.day.maxtemp_c}°C</p>
+                    <p>Min Temp: ${day.day.mintemp_c}°C</p>
+                    <p>Avg Temp: ${day.day.avgtemp_c}°C</p>
+                    <p>Max Wind: ${day.day.maxwind_mph} mph</p>
+                    <p>Humidity: ${day.day.avghumidity}%</p>
+                    <p>UV Index: ${day.day.uv}</p>
+                    <div class="clothing">Clothing: ${clothingEmoji}</div>
+                `;
+
+                container.appendChild(dayElement);
+            });
+        }
+
+        wFunc();
+    </script>
+
+</body>
+</html>
